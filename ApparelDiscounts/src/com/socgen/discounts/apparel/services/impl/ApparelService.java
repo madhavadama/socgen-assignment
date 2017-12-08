@@ -123,12 +123,13 @@ public class ApparelService {
 	
 	public void generateBills(List< List<Integer>> bills) {
 		
-		int billNo = 1;
+		int billNo = storedBills.size();
 		for(List<Integer> bill : bills)
 		{
 			ApparelBillService apparelBillService = new ApparelBillServiceImpl();
 			
-			apparelService.setStoredBill(billNo++, apparelBillService.generateBill(bill));
+			Bill bill1 = apparelBillService.generateBill(bill);
+			apparelService.setStoredBill(billNo++, bill1);
 		}
 	}
 	

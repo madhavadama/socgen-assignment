@@ -25,7 +25,7 @@ class ApparelDiscountsUploaderTest {
 		apparelService.printDiscounts();
 		
 		
-		assertNotSame(20, apparelService.getDicountsMap().get("Provogue").getDiscount());
+		assertNotEquals(20, apparelService.getDicountsMap().get("Provogue").getDiscount());
 	}
 	
 	@Test
@@ -35,7 +35,7 @@ class ApparelDiscountsUploaderTest {
 		apparelService.printCategoryDiscounts();
 		
 		
-		assertNotSame(30, apparelService.getCategoryDicountsMap().get("Casuals").getDiscount());
+		assertNotEquals(30, apparelService.getCategoryDicountsMap().get("Casuals").getDiscount());
 	}
 	
 	@Test
@@ -45,7 +45,7 @@ class ApparelDiscountsUploaderTest {
 		apparelService.printParentDiscounts();
 		
 		
-		assertNotSame(0, apparelService.getParentDicountsMap().get("Mens wear").getDiscount());
+		assertNotEquals(0, apparelService.getParentDicountsMap().get("Mens wear").getDiscount());
 	}
 	
 	@Test
@@ -55,7 +55,7 @@ class ApparelDiscountsUploaderTest {
 		apparelService.printApparels();
 		
 		
-		assertNotSame(800, apparelService.getApparelMap().get(1).getPrice());
+		assertNotEquals(800, apparelService.getApparelMap().get(1).getPrice());
 	}
 	
 	

@@ -22,5 +22,6 @@ public class ApparelBillsTest {
 		apparelService = ApparelService.getApparelService();
 		
 		apparelService.generateBills(apparelService.scanUserBillItems());
+		apparelService.printBills();
 	}
 }

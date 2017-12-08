@@ -2,50 +2,62 @@ package com.socgen.discounts.apparel.tests;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.Before;
 import org.junit.jupiter.api.Test;
 
-import com.socgen.discounts.apparel.ApparelBillingApp;
+import com.socgen.discounts.apparel.services.impl.ApparelService;
 
 class ApparelDiscountsUploaderTest {
+	
+	ApparelService apparelService;
+	@Before
+	public void testGenerateBill() {
+		
+		apparelService = ApparelService.getApparelService();
+		
+		apparelService.init();
+	}
 
 	@Test
 	void testBrandDiscountUpload() {
-		ApparelBillingApp apparelBillingApp = ApparelBillingApp.getApparelBillingApp();
-		apparelBillingApp.uploadApparelBrandDiscounts();
-		apparelBillingApp.printDiscounts();
+		ApparelService apparelService = ApparelService.getApparelService();
+		apparelService.uploadApparelBrandDiscounts();
+		apparelService.printDiscounts();
 		
 		
-		assertNotSame(20, apparelBillingApp.getDicountsMap().get("Provogue").getDiscount());
+		assertNotSame(20, apparelService.getDicountsMap().get("Provogue").getDiscount());
 	}
 	
 	@Test
 	void testCategoryDiscountUpload() {
-		ApparelBillingApp apparelBillingApp = ApparelBillingApp.getApparelBillingApp();
-		apparelBillingApp.uploadApparelCategoryDiscounts();
-		apparelBillingApp.printCategoryDiscounts();
+		ApparelService apparelService = ApparelService.getApparelService();
+		apparelService.uploadApparelCategoryDiscounts();
+		apparelService.printCategoryDiscounts();
 		
 		
-		assertNotSame(30, apparelBillingApp.getCategoryDicountsMap().get("Casuals").getDiscount());
+		assertNotSame(30, apparelService.getCategoryDicountsMap().get("Casuals").getDiscount());
 	}
 	
 	@Test
 	void testParentDiscountUpload() {
-		ApparelBillingApp apparelBillingApp = ApparelBillingApp.getApparelBillingApp();
-		apparelBillingApp.uploadApparelParentGroupsDiscounts();
-		apparelBillingApp.printParentDiscounts();
+		ApparelService apparelService = ApparelService.getApparelService();
+		apparelService.uploadApparelParentGroupsDiscounts();
+		apparelService.printParentDiscounts();
 		
 		
-		assertNotSame(0, apparelBillingApp.getParentDicountsMap().get("Mens wear").getDiscount());
+		assertNotSame(0, apparelService.getParentDicountsMap().get("Mens wear").getDiscount());
 	}
 	
 	@Test
 	void testApparelUpload() {
-		ApparelBillingApp apparelBillingApp = ApparelBillingApp.getApparelBillingApp();
-		apparelBillingApp.uploadApparels();
-		apparelBillingApp.printApparels();
+		ApparelService apparelService = ApparelService.getApparelService();
+		apparelService.uploadApparels();
+		apparelService.printApparels();
 		
 		
-		assertNotSame(800, apparelBillingApp.getApparelMap().get(1).getPrice());
+		assertNotSame(800, apparelService.getApparelMap().get(1).getPrice());
 	}
+	
+	
 
 }

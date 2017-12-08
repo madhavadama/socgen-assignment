@@ -1,6 +1,6 @@
-package com.socgen.discounts.apparel;
+package com.socgen.discounts.apparel.services.impl;
 
-import static org.junit.jupiter.api.DynamicTest.stream;
+
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,10 +15,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.socgen.discounts.apparel.model.Apparel;
+import com.socgen.discounts.apparel.model.Bill;
 import com.socgen.discounts.apparel.model.Category;
 import com.socgen.discounts.apparel.model.Discount;
+import com.socgen.discounts.apparel.services.ApparelBillService;
 
-public class ApparelBillingApp {
+public class ApparelService {
 
 	private Map<Integer, Apparel> apparelMap = new HashMap<Integer, Apparel>();
 
@@ -26,18 +28,20 @@ public class ApparelBillingApp {
 	
 	private Map<String,Discount> parentDicountsMap = new HashMap<String,Discount>();
 	private Map<String, Category> categoryDicountsMap = new HashMap<String,Category>();
-	private List<Integer> billItems = new ArrayList<Integer>();
+	//private List<Integer> billItems = new ArrayList<Integer>();
 	
-	private List< List<Integer>> bills = new ArrayList<List<Integer>>();
+	private Map< Integer, Bill> storedBills = new HashMap<Integer, Bill>();
 	
 
-	private static ApparelBillingApp apparelBillingApp = new ApparelBillingApp();
+
+
+	private static ApparelService apparelService = new ApparelService();
 	
 	
 	
-	public static ApparelBillingApp getApparelBillingApp() {
+	public static ApparelService getApparelService() {
 		
-		return apparelBillingApp;
+		return apparelService;
 	}
 	public void init() {
 		
@@ -88,18 +92,17 @@ public class ApparelBillingApp {
 		sc.close();
 	}
 	
-	public void scanUserBillItems()
+	public List< List<Integer>> scanUserBillItems()
 	{
+		List< List<Integer>> bills = new ArrayList<List<Integer>>();
+		
 		int number =0;
-		
-		
 		java.util.Scanner sc = new Scanner(System.in);
 		
 		number = Integer.parseInt(sc.nextLine().trim());
 		
-		
 		while(number > 0) {
-		Scanner lineScanner = new Scanner(sc.nextLine());  // it will not leave untill user enter data. 
+		Scanner lineScanner = new Scanner(sc.nextLine());  // it will not leave until user enter data. 
 		lineScanner = lineScanner.useDelimiter(",");
 		
 		List<Integer> billItems = new ArrayList<Integer>();
@@ -115,41 +118,33 @@ public class ApparelBillingApp {
 		}
 				
 		sc.close();
+		return bills;
 	}
 	
-	public void generateBill() {
+	public void generateBills(List< List<Integer>> bills) {
 		
+		int billNo = 1;
 		for(List<Integer> bill : bills)
 		{
-			double originalPrice = 0;
-			double discountedPrice = 0;
+			ApparelBillService apparelBillService = new ApparelBillServiceImpl();
 			
-			
-			for(int itemId:bill){
-				Apparel apparel = apparelMap.get(itemId);
-				
-				double price= apparel.getPrice();
-				//System.out.println("Price = "+price);
-				double brandDiscount = brandsDicountsMap.get(apparel.getBrand()).getDiscount();
-				
-				double categoryDiscount =categoryDicountsMap.get(apparel.getCategory()).getDiscount();
-				
-				Category category = categoryDicountsMap.get(apparel.getCategory());
-				
-				double parentDiscount = parentDicountsMap.get(category.getParent()).getDiscount();
-				
-			    double applicableDiscount = Math.max(brandDiscount, Math.max(categoryDiscount, parentDiscount));
-			    //System.out.println("applicableDiscount = "+applicableDiscount);
-			    
-			    //System.out.println("Price = "+price+" "+(price*applicableDiscount/100));
-			    originalPrice+=price;
-			    discountedPrice += price*(100-applicableDiscount)/100;
-			    
-			}
-			
-			System.out.println("Items "+bill.toString()+"Price ="+originalPrice+"Discounted price="+discountedPrice);
+			apparelService.setStoredBill(billNo++, apparelBillService.generateBill(bill));
 		}
 	}
+	
+	
+	public void printBills(){
+		
+		for(Bill bill : storedBills.values())
+		{
+			
+			ApparelBillService apparelBillService = new ApparelBillServiceImpl();
+			
+			apparelBillService.printBill(bill);
+		}
+		
+	}
+
 	
 	public void uploadApparelBrandDiscounts() {
 		try{
@@ -263,6 +258,14 @@ public class ApparelBillingApp {
 		this.apparelMap = apparelMap;
 	}
 	
+	public Map<String, Discount> getBrandsDicountsMap() {
+		return brandsDicountsMap;
+	}
+	public void setBrandsDicountsMap(Map<String, Discount> brandsDicountsMap) {
+		this.brandsDicountsMap = brandsDicountsMap;
+	}
+
+	
 	public Map<String, Discount> getDicountsMap() {
 		return brandsDicountsMap;
 	}
@@ -281,43 +284,58 @@ public class ApparelBillingApp {
 	public void setCategoryDicountsMap(Map<String, Category> categoryDicountsMap) {
 		this.categoryDicountsMap = categoryDicountsMap;
 	}
-	public List<List<Integer>> getBills() {
-		return bills;
+	public Map<Integer, Bill> getStoredBills() {
+		return storedBills;
 	}
-	public void setBills(List<List<Integer>> bills) {
-		this.bills = bills;
+	public void setStoredBills(Map<Integer, Bill> storedBills) {
+		this.storedBills = storedBills;
+	}
+	public Bill getStoredBill(int billNo) {
+		
+		
+		return storedBills.get(billNo);
+		
+	}
+	public void setStoredBill(int billNo, Bill storedBill) {
+		
+		this.storedBills.put(billNo, storedBill);
+		
 	}
 	
-	public void resetBills()
+	public void resetStoredBills()
 	{
-		bills.clear();
+		storedBills.clear();
 	}
 	
 	public static void main(String args[]) {
 		
-		ApparelBillingApp apparelBillingApp = getApparelBillingApp();
+		ApparelService apparelService = getApparelService();
 		
-		apparelBillingApp.init();
+		apparelService.init();
 		System.out.println("Do you want to enter Shop Inventory in Console");
 		java.util.Scanner sc = new Scanner(System.in);
 		String response = sc.next();
 		
 		if(response.equals("Y") || response.equals("y") || 
 				response.equals("YES") || response.equals("yes"))
-			apparelBillingApp.readShopInventory();
+			apparelService.readShopInventory();
 		
 		boolean done = false;
 		while(!done) {
 			try {
-				apparelBillingApp.resetBills();
-				apparelBillingApp.scanUserBillItems();
+				apparelService.resetStoredBills();
+				List<List<Integer>> listBills= apparelService.scanUserBillItems();
+				
+				apparelService.generateBills(listBills);
+				apparelService.printBills();
+				
 				done=true;
 			}
 			catch(NumberFormatException | InputMismatchException e) {
 				System.out.println("Wrong Input, Re enter inputs");
 			}
 		}
-		apparelBillingApp.generateBill();
+		//apparelService.generateBill();
 		
 	}
 }
